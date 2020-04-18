@@ -207,7 +207,6 @@ static ovrGraphicsLuid GetDefaultAdapterLuid()
     return luid;
 }
 
-
 static int Compare(const ovrGraphicsLuid& lhs, const ovrGraphicsLuid& rhs)
 {
     return memcmp(&lhs, &rhs, sizeof(ovrGraphicsLuid));
@@ -287,7 +286,7 @@ static bool MainLoop(bool retryCreate)
 
     // FloorLevel will give tracking poses where the floor height is 0
     ovr_SetTrackingOriginType(session, ovrTrackingOrigin_FloorLevel);
-    
+
     // Main loop
     while (Platform.HandleMessages())
     {
@@ -323,6 +322,24 @@ static bool MainLoop(bool retryCreate)
 				roomScene->getModelByIndex(0).Pos = Vector3f(9 * (float)sin(cubeClock), 3, 9 * (float)cos(cubeClock += 0.015f));
 			}
 
+			
+			// We don't allow yaw change for now, as this sample is too simple to cater for it.
+
+			//Write position and orientation into controller models.
+			double displayMidpointSeconds = ovr_GetPredictedDisplayTime(session, frameIndex);
+			ovrTrackingState trackState = ovr_GetTrackingState(session, displayMidpointSeconds, ovrTrue);
+
+			ovrPosef leftHandPose = trackState.HandPoses[ovrHand_Left].ThePose;
+			Quatf leftHandOrientation = leftHandPose.Orientation;
+			Vector3f leftHandPosition = Pos2 + Matrix4f::RotationY(Yaw).Transform(leftHandPose.Position);
+
+			roomScene->getModelByIndex(1).Rot = Quatf(
+				-1.0f*leftHandOrientation.x,
+				leftHandOrientation.y,
+				-1.0f*leftHandOrientation.z,
+				leftHandOrientation.w);
+			roomScene->getModelByIndex(1).Pos = leftHandPosition;
+			
 			//Button presses are modifying the colour of the controller model below
 			ovrInputState inputState;
 			ovr_GetInputState(session, ovrControllerType_Touch, &inputState);
