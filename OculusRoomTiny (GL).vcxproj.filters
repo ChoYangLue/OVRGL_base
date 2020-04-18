@@ -2,16 +2,30 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE.cpp" />
+    <ClCompile Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE.cpp">
+      <Filter>GLE</Filter>
+    </ClCompile>
+    <ClCompile Include="scene.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Common\Win32_GLAppUtil.h" />
-    <ClInclude Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE.h" />
-    <ClInclude Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE_GL.h" />
+    <ClInclude Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE.h">
+      <Filter>GLE</Filter>
+    </ClInclude>
+    <ClInclude Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE_GL.h">
+      <Filter>GLE</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\Win32_GLAppUtil.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="scene.h" />
+    <ClInclude Include="debug.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="GLE">
       <UniqueIdentifier>{350d0df2-6c96-486d-82d9-786aa05d811b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{77b096b9-f699-487b-a4a6-7e59f9fa10cf}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

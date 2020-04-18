@@ -24,6 +24,8 @@ limitations under the License.
 /// is not that great!
 
 #include "./Common/Win32_GLAppUtil.h"
+#include "scene.h"
+#include "debug.h"
 
 // Include the Oculus SDK
 #include "OVR_CAPI_GL.h"
@@ -316,8 +318,27 @@ static bool MainLoop(bool retryCreate)
 
             // Animate the cube
             static float cubeClock = 0;
-            if (sessionStatus.HasInputFocus) // Pause the application if we are not supposed to have input.
-                roomScene->Models[0]->Pos = Vector3f(9 * (float)sin(cubeClock), 3, 9 * (float)cos(cubeClock += 0.015f));
+			if (sessionStatus.HasInputFocus) {
+				// Pause the application if we are not supposed to have input.
+				roomScene->getModelByIndex(0).Pos = Vector3f(9 * (float)sin(cubeClock), 3, 9 * (float)cos(cubeClock += 0.015f));
+			}
+
+			//Button presses are modifying the colour of the controller model below
+			ovrInputState inputState;
+			ovr_GetInputState(session, ovrControllerType_Touch, &inputState);
+
+			//static XMFLOAT3 lastControllerPos;
+			static bool buttonDown;
+			if (inputState.Buttons & ovrTouch_X)
+				buttonDown = true;
+			else
+				buttonDown = false;
+			if (buttonDown) {
+				DBGLOG("inputState.Buttons & ovrTouch_X !");
+			}
+
+			///		this->MainCam->Pos = initialPos = controllerL->Pos;
+
 
             // Call ovr_GetRenderDesc each frame to get the ovrEyeRenderDesc, as the returned values (e.g. HmdToEyePose) may change at runtime.
             ovrEyeRenderDesc eyeRenderDesc[2];
