@@ -528,8 +528,8 @@ struct Model
     Quatf           Rot;
     Matrix4f        Mat;
     int             numVertices, numIndices;
-    Vertex          Vertices[2000]; // Note fixed maximum
-    GLushort        Indices[2000];
+    Vertex          Vertices[20000]; // Note fixed maximum
+    GLushort        Indices[20000];
     ShaderFill    * Fill;
     VertexBuffer  * vertexBuffer;
     IndexBuffer   * indexBuffer;

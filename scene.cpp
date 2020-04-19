@@ -108,12 +108,6 @@ void Scene::Init(int includeIntensiveGPUobject)
 	m->AllocateBuffers();
 	Add(m);
 
-	//m = new Model(Vector3f(0, 0, 0), grid_material[2]);  // Controller box
-	//m->AddSolidColorBox(0, 0, 0, +0.3f, +0.3f, 0.3f, 0xff4040ff);
-	//m->AllocateBuffers();
-	//Add(m);
-
-
 	m = new Model(Vector3f(0, 0, 0), grid_material[1]);  // Walls
 	m->AddSolidColorBox(-10.1f, 0.0f, -20.0f, -10.0f, 4.0f, 20.0f, 0xff808080); // Left Wall
 	m->AddSolidColorBox(-10.0f, -0.1f, -20.1f, 10.0f, 4.0f, -20.0f, 0xff808080); // Back Wall

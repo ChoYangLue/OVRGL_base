@@ -9,6 +9,9 @@
 #include "obj_loader.h"
 #include "debug.h"
 
+
+#define ISOK( _a ) { if(_a < 0) { printf("ISOK() Failed line: %d\n", __LINE__); return false;} }
+
 using namespace OVR;
 
 DWORD GetColor(int Red, int Green, int Blue, int Alpha = 255)
@@ -27,12 +30,23 @@ struct MtlModel
 	float ni;
 	int illum;
 	std::string tex;
+	int vertex_ind[2];
 };
 
 struct ObjModel
 {
 	std::string dir_path;
 	std::vector<MtlModel> materials;
+
+	int GetMaterialIndexByName(const std::string& _name)
+	{
+		int ret_ind = 0;
+		for (auto& mt:materials) {
+			if (mt.name == _name) return ret_ind;
+			ret_ind++;
+		}
+		return -1;
+	}
 };
 
 std::vector<std::string> splitWithSpace(const std::string& buf)
@@ -138,24 +152,14 @@ bool loadMTL(std::vector<MtlModel>& materials, const std::string& _filePath)
 		}
 		else if (buf.find("map_Kd ") != std::string::npos) {
 			// テクスチャ名
-
-			if (mtl_index < 0) {
-				LOG("mtl index is -1 \n");
-				mtl_ifs.close();
-				return false;
-			}
+			ISOK(mtl_index);
 
 			std::vector<std::string> tex_name = splitWithSpace(buf);
 			//materials[mtl_index].tex = tex_name[0];
 		}
 		else if (buf.find("Kd ") != std::string::npos) {
 			// ディフューズカラー	RGB(0.0～1.0)
-
-			if (mtl_index < 0) {
-				LOG("mtl index is -1 \n");
-				mtl_ifs.close();
-				return false;
-			}
+			ISOK(mtl_index);
 
 			std::vector<std::string> spl_list = splitWithSpace(buf);
 			materials[mtl_index].kd.x = std::stof(spl_list[0]);
@@ -165,12 +169,7 @@ bool loadMTL(std::vector<MtlModel>& materials, const std::string& _filePath)
 		}
 		else if (buf.find("Ka ") != std::string::npos) {
 			// アンビエントカラー	RGB(0.0～1.0)
-
-			if (mtl_index < 0) {
-				LOG("mtl index is -1 \n");
-				mtl_ifs.close();
-				return false;
-			}
+			ISOK(mtl_index);
 
 			std::vector<std::string> spl_list = splitWithSpace(buf);
 			materials[mtl_index].ka.x = std::stof(spl_list[0]);
@@ -179,12 +178,7 @@ bool loadMTL(std::vector<MtlModel>& materials, const std::string& _filePath)
 		}
 		else if (buf.find("Ks ") != std::string::npos) {
 			// スペキュラーカラー	RGB(0.0～1.0)
-
-			if (mtl_index < 0) {
-				LOG("mtl index is -1 \n");
-				mtl_ifs.close();
-				return false;
-			}
+			ISOK(mtl_index);
 
 			std::vector<std::string> spl_list = splitWithSpace(buf);
 			materials[mtl_index].ks.x = std::stof(spl_list[0]);
@@ -193,12 +187,7 @@ bool loadMTL(std::vector<MtlModel>& materials, const std::string& _filePath)
 		}
 		else if (buf.find("Ke ") != std::string::npos) {
 			// スペキュラーカラー	RGB(0.0～1.0)
-
-			if (mtl_index < 0) {
-				LOG("mtl index is -1 \n");
-				mtl_ifs.close();
-				return false;
-			}
+			ISOK(mtl_index);
 
 			std::vector<std::string> spl_list = splitWithSpace(buf);
 			materials[mtl_index].ke.x = std::stof(spl_list[0]);
@@ -216,21 +205,13 @@ bool loadMTL(std::vector<MtlModel>& materials, const std::string& _filePath)
 			materials[mtl_index].ns = std::stof(spl_list[0]);
 		}
 		else if (buf.find("Ni ") != std::string::npos) {
-			if (mtl_index < 0) {
-				LOG("mtl index is -1 \n");
-				mtl_ifs.close();
-				return false;
-			}
+			ISOK(mtl_index);
 
 			std::vector<std::string> spl_list = splitWithSpace(buf);
 			materials[mtl_index].ni = std::stof(spl_list[0]);
 		}
 		else if (buf.find("illum ") != std::string::npos) {
-			if (mtl_index < 0) {
-				LOG("mtl index is -1 \n");
-				mtl_ifs.close();
-				return false;
-			}
+			ISOK(mtl_index);
 
 			std::vector<std::string> spl_list = splitWithSpace(buf);
 			materials[mtl_index].illum = std::stoi(spl_list[0]);
@@ -264,6 +245,8 @@ bool loadOBJ(Model& data, const std::string& _filePath)
 		return false;
 	}
 
+	int vertex_index = 0;
+	int pre_vertex_index = 0;
 	std::vector<MtlModel> materials;
 	while (true) {
 		std::string buf;
@@ -315,7 +298,7 @@ bool loadOBJ(Model& data, const std::string& _filePath)
 				((G > 255 ? 255 : DWORD(G)) << 8) +
 				(B > 255 ? 255 : DWORD(B));
 			data.AddVertex(vvv);
-
+			vertex_index++;
 		}
 		else if (buf.find("vt ") != std::string::npos) {
 			// １つの頂点のテクスチャ座標値
@@ -331,6 +314,13 @@ bool loadOBJ(Model& data, const std::string& _filePath)
 			// １つの頂点の法線
 			std::vector<std::string> norm_str_list = splitWithSpace(buf);
 			DBGLOG("mtl name: %s", norm_str_list[0].c_str() );
+
+			int ind_t = obj_model.GetMaterialIndexByName(norm_str_list[0]);
+			ISOK(ind_t);
+			obj_model.materials[ind_t].vertex_ind[0] = pre_vertex_index;
+			obj_model.materials[ind_t].vertex_ind[1] = vertex_index;
+
+			pre_vertex_index = vertex_index;
 		}
 		else if (buf.find("f ") != std::string::npos) {
 			// 頂点座標値番号/テクスチャ座標値番号/頂点法線ベクトル番号
@@ -353,9 +343,11 @@ bool loadOBJ(Model& data, const std::string& _filePath)
 	}
 	obj_ifs.close();
 
-	for (int i = 0; i < sizeof(data.Vertices) / sizeof(data.Vertices[0]); i++) {
-		//data.Vertices[i].C = 0xff11f0ff;
-		data.Vertices[i].C = GetColor(255, 0, 0);
+
+	for (auto& mt:obj_model.materials) {
+		for (int i = mt.vertex_ind[0]; i < mt.vertex_ind[1]; i++) {
+			data.Vertices[i].C = GetColor(255, 0, 0);
+		}
 	}
 
 	return true;
