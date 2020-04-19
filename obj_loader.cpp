@@ -343,10 +343,9 @@ bool loadOBJ(Model& data, const std::string& _filePath)
 
 			for (auto& li : f_str_list) {
 				std::vector<std::string> face_str_list = splitWithSlash(li);
-				//DBGLOG("face: %s ", face_str_list[0].c_str());
 
+				// 1‚©‚çŽn‚Ü‚è‚È‚Ì‚Å0‚©‚çŽn‚Ü‚è‚É‚·‚é
 				data.AddIndex((GLushort)std::stoi(face_str_list[0])-1 );
-				//DBGLOG("face: %i", (GLushort)std::stoi(face_str_list[0]) );
 			}
 			
 		}
@@ -355,7 +354,8 @@ bool loadOBJ(Model& data, const std::string& _filePath)
 	obj_ifs.close();
 
 	for (int i = 0; i < sizeof(data.Vertices) / sizeof(data.Vertices[0]); i++) {
-		data.Vertices[i].C = 0xff11f0ff;
+		//data.Vertices[i].C = 0xff11f0ff;
+		data.Vertices[i].C = GetColor(255, 0, 0);
 	}
 
 	return true;
