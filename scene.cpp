@@ -1,5 +1,5 @@
 #include "scene.h"
-
+#include "obj_loader.h"
 
 void Scene::Add(Model * n)
 {
@@ -89,6 +89,9 @@ void Scene::Init(int includeIntensiveGPUobject)
 	glDeleteShader(vshader);
 	glDeleteShader(fshader);
 
+
+	
+
 	// Construct geometry
 	Model * m = new Model(Vector3f(0, 0, 0), grid_material[2]);  // Moving box
 	m->AddSolidColorBox(0, 0, 0, +1.0f, +1.0f, 1.0f, 0xff404040);
@@ -99,6 +102,16 @@ void Scene::Init(int includeIntensiveGPUobject)
 	m->AddSolidColorBox(0, 0, 0, +0.3f, +0.3f, 0.3f, 0xff4040ff);
 	m->AllocateBuffers();
 	Add(m);
+
+	m = new Model(Vector3f(0, 0, 0), grid_material[2]);
+	loadOBJ(*m, "Assets/obj/stestobj.obj");
+	m->AllocateBuffers();
+	Add(m);
+
+	//m = new Model(Vector3f(0, 0, 0), grid_material[2]);  // Controller box
+	//m->AddSolidColorBox(0, 0, 0, +0.3f, +0.3f, 0.3f, 0xff4040ff);
+	//m->AllocateBuffers();
+	//Add(m);
 
 
 	m = new Model(Vector3f(0, 0, 0), grid_material[1]);  // Walls

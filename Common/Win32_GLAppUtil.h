@@ -507,16 +507,23 @@ struct IndexBuffer
     }
 };
 
+/*
+DWORD GetColor(int Red, int Green, int Blue, int Alpha=255)
+{
+	return ((Red & 0xff) << 24) + ((Green & 0xff) << 16) + ((Blue & 0xff) << 8) + (Alpha & 0xff);
+}
+*/
+
 //---------------------------------------------------------------------------
+struct Vertex
+{
+	Vector3f  Pos;
+	DWORD     C;
+	float     U, V;
+};
+
 struct Model
 {
-    struct Vertex
-    {
-        Vector3f  Pos;
-        DWORD     C;
-        float     U, V;
-    };
-
     Vector3f        Pos;
     Quatf           Rot;
     Matrix4f        Mat;
@@ -537,16 +544,12 @@ struct Model
         vertexBuffer(nullptr),
         indexBuffer(nullptr)
     {}
-
-    ~Model()
-    {
-        FreeBuffers();
-    }
+    ~Model() { FreeBuffers(); }
 
     Matrix4f& GetMatrix()
     {
         Mat = Matrix4f(Rot);
-        Mat = Matrix4f::Translation(Pos) * Mat;
+        Mat = Matrix4f::Translation(Pos) * Mat; // ˆÊ’us—ñ‚˜‰ñ“]s—ñ
         return Mat;
     }
 

@@ -320,8 +320,16 @@ static bool MainLoop(bool retryCreate)
 			if (sessionStatus.HasInputFocus) {
 				// Pause the application if we are not supposed to have input.
 				roomScene->getModelByIndex(0).Pos = Vector3f(9 * (float)sin(cubeClock), 3, 9 * (float)cos(cubeClock += 0.015f));
+				Vector3f RotationAxis(0.0f,1.0f,0.0f);
+				float RotationAngle = 3.14f / 4;
+				roomScene->getModelByIndex(2).Rot = Quatf(
+					RotationAxis.x * (float)sin(RotationAngle / 2),
+					RotationAxis.y * (float)sin(RotationAngle / 2),
+					RotationAxis.z * (float)sin(RotationAngle / 2),
+					(float) cos(RotationAngle / 2)
+				);
 			}
-
+			
 			
 			// We don't allow yaw change for now, as this sample is too simple to cater for it.
 

@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClCompile Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="obj_loader.cpp" />
     <ClCompile Include="scene.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -28,6 +29,7 @@
     <ClInclude Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE_GL.h" />
     <ClInclude Include="Common\Win32_GLAppUtil.h" />
     <ClInclude Include="debug.h" />
+    <ClInclude Include="obj_loader.h" />
     <ClInclude Include="scene.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
