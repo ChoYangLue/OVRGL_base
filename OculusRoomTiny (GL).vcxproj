@@ -23,6 +23,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="obj_loader.cpp" />
     <ClCompile Include="scene.cpp" />
+    <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE.h" />
@@ -31,6 +32,7 @@
     <ClInclude Include="debug.h" />
     <ClInclude Include="obj_loader.h" />
     <ClInclude Include="scene.h" />
+    <ClInclude Include="texturer.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{396D645E-3224-433C-AFBA-6EF6919A2214}</ProjectGuid>
@@ -251,7 +253,7 @@
     <ClCompile>
       <FloatingPointModel>Precise</FloatingPointModel>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <TreatWarningAsError>true</TreatWarningAsError>
+      <TreatWarningAsError>false</TreatWarningAsError>
       <OmitFramePointers>false</OmitFramePointers>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <AdditionalIncludeDirectories>$(ProjectDir)SDK\LibOVR\Include\;$(ProjectDir)SDK\LibOVRKernel\Src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>

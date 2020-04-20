@@ -67,7 +67,7 @@ void Scene::Init(int includeIntensiveGPUobject)
 	GLuint    fshader = CreateShader(GL_FRAGMENT_SHADER, FragmentShaderSrc);
 
 	// Make textures
-	ShaderFill * grid_material[4];
+	ShaderFill * grid_material[5];
 	for (int k = 0; k < 4; ++k)
 	{
 		static DWORD tex_pixels[256 * 256];
@@ -86,6 +86,9 @@ void Scene::Init(int includeIntensiveGPUobject)
 		grid_material[k] = new ShaderFill(vshader, fshader, generated_texture);
 	}
 
+	TextureBuffer * generated_texture = new TextureBuffer(false, "Assets/obj/testobj.png", 0);
+	grid_material[4] = new ShaderFill(vshader, fshader, generated_texture);
+
 	glDeleteShader(vshader);
 	glDeleteShader(fshader);
 
@@ -98,8 +101,8 @@ void Scene::Init(int includeIntensiveGPUobject)
 	m->AllocateBuffers();
 	Add(m);
 
-	m = new Model(Vector3f(0, 0, 0), grid_material[2]);  // Controller box
-	m->AddSolidColorBox(0, 0, 0, +0.3f, +0.3f, 0.3f, 0xff4040ff);
+	m = new Model(Vector3f(0, 0, 0), grid_material[4]);  // Controller box
+	m->AddSolidColorBox(0, 0, 0, +0.3f, +0.3f, 0.3f, GetColor(255,255,255) );
 	m->AllocateBuffers();
 	Add(m);
 

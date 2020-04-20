@@ -24,6 +24,8 @@
 #include "Extras/OVR_Math.h"
 #include "OVR_CAPI_GL.h"
 #include <assert.h>
+#include <vector>
+#include "../texturer.h"
 
 using namespace OVR;
 
@@ -35,129 +37,6 @@ using namespace OVR;
     #define OVR_DEBUG_LOG(x)
 #endif
 
-
-//---------------------------------------------------------------------------------------
-struct DepthBuffer
-{
-    GLuint        texId;
-
-    DepthBuffer(Sizei size)
-    {
-        glGenTextures(1, &texId);
-        glBindTexture(GL_TEXTURE_2D, texId);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-        GLenum internalFormat = GL_DEPTH_COMPONENT24;
-        GLenum type = GL_UNSIGNED_INT;
-        if (GLE_ARB_depth_buffer_float)
-        {
-            internalFormat = GL_DEPTH_COMPONENT32F;
-            type = GL_FLOAT;
-        }
-
-        glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, size.w, size.h, 0, GL_DEPTH_COMPONENT, type, NULL);
-    }
-    ~DepthBuffer()
-    {
-        if (texId)
-        {
-            glDeleteTextures(1, &texId);
-            texId = 0;
-        }
-    }
-};
-
-//--------------------------------------------------------------------------
-struct TextureBuffer
-{
-    GLuint              texId;
-    GLuint              fboId;
-    Sizei               texSize;
-
-    TextureBuffer(bool rendertarget, Sizei size, int mipLevels, unsigned char * data) :
-        texId(0),
-        fboId(0),
-        texSize(0, 0)
-    {
-        texSize = size;
-
-        glGenTextures(1, &texId);
-        glBindTexture(GL_TEXTURE_2D, texId);
-
-        if (rendertarget)
-        {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        }
-        else
-        {
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        }
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB8_ALPHA8, texSize.w, texSize.h, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-
-        if (mipLevels > 1)
-        {
-            glGenerateMipmap(GL_TEXTURE_2D);
-        }
-
-        if(rendertarget)
-        {
-            glGenFramebuffers(1, &fboId);
-        }
-    }
-
-    ~TextureBuffer()
-    {
-        if (texId)
-        {
-            glDeleteTextures(1, &texId);
-            texId = 0;
-        }
-        if (fboId)
-        {
-            glDeleteFramebuffers(1, &fboId);
-            fboId = 0;
-        }
-    }
-
-    Sizei GetSize() const
-    {
-        return texSize;
-    }
-
-    void SetAndClearRenderSurface(DepthBuffer* dbuffer)
-    {
-        VALIDATE(fboId, "Texture wasn't created as a render target");
-
-        GLuint curTexId = texId;
-
-        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, curTexId, 0);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, dbuffer->texId, 0);
-
-        glViewport(0, 0, texSize.w, texSize.h);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_FRAMEBUFFER_SRGB);
-    }
-
-    void UnsetRenderSurface()
-    {
-        VALIDATE(fboId, "Texture wasn't created as a render target");
-
-        glBindFramebuffer(GL_FRAMEBUFFER, fboId);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, 0, 0);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, 0, 0);
-    }
-};
 
 //-------------------------------------------------------------------------------------------
 struct OGL
@@ -520,6 +399,7 @@ struct Vertex
 	Vector3f  Pos;
 	DWORD     C;
 	float     U, V;
+	//Vector3f  Norm;
 };
 
 struct Model
@@ -528,8 +408,8 @@ struct Model
     Quatf           Rot;
     Matrix4f        Mat;
     int             numVertices, numIndices;
-    Vertex          Vertices[20000]; // Note fixed maximum
-    GLushort        Indices[20000];
+    std::vector<Vertex>          Vertices;
+    std::vector<GLushort>        Indices;
     ShaderFill    * Fill;
     VertexBuffer  * vertexBuffer;
     IndexBuffer   * indexBuffer;
@@ -553,8 +433,16 @@ struct Model
         return Mat;
     }
 
-    void AddVertex(const Vertex& v) { Vertices[numVertices++] = v; }
-    void AddIndex(GLushort a) { Indices[numIndices++] = a; }
+	void AddVertex(const Vertex& v)
+	{
+		Vertices.push_back(v); 
+		numVertices++; 
+	}
+    void AddIndex(GLushort a)
+	{
+		Indices.push_back(a);
+		numIndices++;
+	}
 
     void AllocateBuffers()
     {

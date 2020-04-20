@@ -14,11 +14,6 @@
 
 using namespace OVR;
 
-DWORD GetColor(int Red, int Green, int Blue, int Alpha = 255)
-{
-	return ((Red & 0xff) << 24) + ((Green & 0xff) << 16) + ((Blue & 0xff) << 8) + (Alpha & 0xff);
-}
-
 struct MtlModel
 {
 	std::string name;

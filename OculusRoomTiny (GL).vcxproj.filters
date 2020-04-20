@@ -7,6 +7,7 @@
     </ClCompile>
     <ClCompile Include="scene.cpp" />
     <ClCompile Include="obj_loader.cpp" />
+    <ClCompile Include="texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(ProjectDir)SDK\LibOVRKernel\Src\GL\CAPI_GLE.h">
@@ -21,6 +22,7 @@
     <ClInclude Include="scene.h" />
     <ClInclude Include="debug.h" />
     <ClInclude Include="obj_loader.h" />
+    <ClInclude Include="texturer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="GLE">
