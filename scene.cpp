@@ -86,7 +86,7 @@ void Scene::Init(int includeIntensiveGPUobject)
 		grid_material[k] = new ShaderFill(vshader, fshader, generated_texture);
 	}
 
-	TextureBuffer * generated_texture = new TextureBuffer(false, "Assets/obj/testobj.png", 0);
+	TextureBuffer * generated_texture = new TextureBuffer(false, "Assets/obj/j7-g01.png", 0);
 	grid_material[4] = new ShaderFill(vshader, fshader, generated_texture);
 
 	glDeleteShader(vshader);
@@ -106,8 +106,9 @@ void Scene::Init(int includeIntensiveGPUobject)
 	m->AllocateBuffers();
 	Add(m);
 
-	m = new Model(Vector3f(0, 0, 0), grid_material[2]);
-	loadOBJ(*m, "Assets/obj/stestobj.obj");
+	m = new Model(Vector3f(0, 1.5f, 0), grid_material[4]);
+	//loadOBJ(*m, "Assets/obj/test.obj");
+	loadOBJ(*m, "Assets/obj/j7-gn.obj");
 	m->AllocateBuffers();
 	Add(m);
 
