@@ -272,34 +272,33 @@ bool loadOBJ(Model& data, const std::string& _filePath)
 	obj_ifs.close();
 
 
-	DBGLOG("mat size: %zi", material.size() );
 
 	// materialごと
 	for (auto& inm: material) {
-
+		DBGLOG("col: 0x%08x", GetColor((int)(inm.second.diffuse[0] * 255), (int)(inm.second.diffuse[1] * 255), (int)(inm.second.diffuse[2] * 255)) );
+		DWORD Col = GetColor((int)(inm.second.diffuse[0] * 255), (int)(inm.second.diffuse[1] * 255), (int)(inm.second.diffuse[2] * 255));
 		// faceごと 
 		for (auto& fas : face[inm.first]) {
 			for (int i = 0; i < 3; i++) {
-				data.AddIndex((GLushort)fas.vi[i]);
-				//data.Vertices[fas.vi[i]].C = GetColor(255,255,255);
-				//DBGLOG("col r: %i", (int)(inm.second.diffuse[0] * 255));
+				
 				if (data.Vertices[fas.vi[i]].U + data.Vertices[fas.vi[i]].V >= 0) {
-					// 既にテクスチャ座標が登録されている
+					// 既にテクスチャ座標が登録されている場合は新しい頂点として登録しなおす
 					Vertex vvv;
 					vvv.Pos = data.Vertices[fas.vi[i]].Pos;
-					vvv.C = GetColor((int)(inm.second.diffuse[0] * 255), (int)(inm.second.diffuse[1] * 255), (int)(inm.second.diffuse[2] * 255));
+					vvv.C = Col;
 					vvv.U = texture[fas.ti[i]].x;
-					vvv.V = -1.0f*texture[fas.ti[i]].y;
+					vvv.V = 1.0f-texture[fas.ti[i]].y;
 					data.AddVertex(vvv);
 					fas.vi[i] = data.Vertices.size()-1;
 				}
 				else {
-					data.Vertices[fas.vi[i]].C = GetColor((int)(inm.second.diffuse[0] * 255), (int)(inm.second.diffuse[1] * 255), (int)(inm.second.diffuse[2] * 255));
+					data.Vertices[fas.vi[i]].C = Col;
 					data.Vertices[fas.vi[i]].U = texture[fas.ti[i]].x;
-					data.Vertices[fas.vi[i]].V = -1.0f*texture[fas.ti[i]].y;
-					DBGLOG("tex index: %f", texture[fas.ti[i]].x);
+					data.Vertices[fas.vi[i]].V = 1.0f-texture[fas.ti[i]].y;
+					//DBGLOG("tex index: %f", texture[fas.ti[i]].x);
 				}
-				
+				data.AddIndex((GLushort)fas.vi[i]);
+				//DBGLOG("face index: %i", fas.vi[i]);
 			}
 			
 		}

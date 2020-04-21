@@ -16,7 +16,7 @@
 
 DWORD GetColor(int Red, int Green, int Blue, int Alpha)
 {
-	return ((Red & 0xff) << 24) + ((Green & 0xff) << 16) + ((Blue & 0xff) << 8) + (Alpha & 0xff);
+	return ((Alpha & 0xff) << 24) + ((Red & 0xff) << 16) + ((Green & 0xff) << 8) + (Blue & 0xff);
 }
 
 TextureBuffer::TextureBuffer(bool rendertarget, Sizei size, int mipLevels, unsigned char * data) :
@@ -85,6 +85,7 @@ TextureBuffer::TextureBuffer(bool rendertarget, const std::string& path, int mip
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
 
 	if (mipLevels > 1)
 	{

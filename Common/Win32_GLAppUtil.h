@@ -491,7 +491,10 @@ struct Model
         for (int v = 0; v < 6 * 4; v++)
         {
             // Make vertices, with some token lighting
-            Vertex vvv; vvv.Pos = Vert[v][0]; vvv.U = Vert[v][1].x; vvv.V = Vert[v][1].y;
+            Vertex vvv; 
+			vvv.Pos = Vert[v][0]; 
+			vvv.U = Vert[v][1].x; 
+			vvv.V = Vert[v][1].y;
             float dist1 = (vvv.Pos - Vector3f(-2, 4, -2)).Length();
             float dist2 = (vvv.Pos - Vector3f(3, 4, -3)).Length();
             float dist3 = (vvv.Pos - Vector3f(-4, 3, 25)).Length();
