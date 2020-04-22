@@ -158,8 +158,8 @@ void Model::AddSolidColorBox(float x1, float y1, float z1, float x2, float y2, f
 			((R > 255 ? 255 : DWORD(R)) << 16) +
 			((G > 255 ? 255 : DWORD(G)) << 8) +
 			(B > 255 ? 255 : DWORD(B));
-		//vvv.Norm = Vert[v][2];
-		vvv.Norm = Vector3f(0,0,0);
+		vvv.Norm = Vert[v][2];
+		//vvv.Norm = Vector3f(0,0,0);
 		AddVertex(vvv);
 	}
 }
@@ -171,12 +171,9 @@ void Model::Render(Matrix4f view, Matrix4f proj)
 	glUseProgram(Fill->program);
 	glUniform1i(glGetUniformLocation(Fill->program, "Texture0"), 0);
 	glUniformMatrix4fv(glGetUniformLocation(Fill->program, "matWVP"), 1, GL_TRUE, (FLOAT*)&combined);
+	glUniformMatrix4fv(glGetUniformLocation(Fill->program, " model_mat"), 1, GL_TRUE, (FLOAT*)&GetMatrix());
 
-	GLfloat se[3];
-	se[0] = 0.0f;
-	se[1] = 0.0f;
-	se[2] = 0.0f;
-	glUniform3f(glGetUniformLocation(Fill->program, "LightDirection"), se[0], se[1], se[2]);
+	glUniform3f(glGetUniformLocation(Fill->program, "LightDirection"), 5.0f, 5.0f, 5.0f);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Fill->texture->texId);

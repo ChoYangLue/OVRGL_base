@@ -111,6 +111,13 @@ struct Model
 	void Render(Matrix4f view, Matrix4f proj);
 };
 
+/*
+struct DirectionalLight
+{
+	Vector3f Pos;
+};
+int CreateDirLightHandle(Vector3f Direction);
+*/
 
 int MV1SetPosition(Model& MHandle, Vector3f Position);
 

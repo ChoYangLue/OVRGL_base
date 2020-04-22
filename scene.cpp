@@ -39,6 +39,7 @@ void Scene::Init(int includeIntensiveGPUobject)
 	static const GLchar* VertexShaderSrc =
 		"#version 150\n"
 		"uniform mat4 matWVP;\n"
+		"uniform mat4  model_mat;\n"
 		"in      vec4 Position;\n"
 		"in      vec4 Color;\n"
 		"in      vec2 TexCoord;\n"
@@ -50,7 +51,10 @@ void Scene::Init(int includeIntensiveGPUobject)
 		"{\n"
 		"   gl_Position = (matWVP * Position);\n"
 		"   oTexCoord   = TexCoord;\n"
-		"   oColor.rgb  = pow(Color.rgb+Normal+LightDirection, vec3(2.2));\n"   // convert from sRGB to linear
+		"vec3 normal = normalize((vec4(Normal, 0.0) * model_mat).xyz);\n"
+		"float power = dot(Normal, -normalize(LightDirection));\n"
+		"power = clamp(power, 0.0, 1.0);\n"
+		"   oColor.rgb  = pow(Color.rgb*power+0.2, vec3(2.2));\n"   // convert from sRGB to linear
 		"   oColor.a    = Color.a;\n"
 		"}\n";
 
