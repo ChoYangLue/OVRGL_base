@@ -42,13 +42,15 @@ void Scene::Init(int includeIntensiveGPUobject)
 		"in      vec4 Position;\n"
 		"in      vec4 Color;\n"
 		"in      vec2 TexCoord;\n"
+		"in      vec3 Normal;\n"
+		"uniform vec3 LightDirection;\n"
 		"out     vec2 oTexCoord;\n"
 		"out     vec4 oColor;\n"
 		"void main()\n"
 		"{\n"
 		"   gl_Position = (matWVP * Position);\n"
 		"   oTexCoord   = TexCoord;\n"
-		"   oColor.rgb  = pow(Color.rgb, vec3(2.2));\n"   // convert from sRGB to linear
+		"   oColor.rgb  = pow(Color.rgb+Normal+LightDirection, vec3(2.2));\n"   // convert from sRGB to linear
 		"   oColor.a    = Color.a;\n"
 		"}\n";
 

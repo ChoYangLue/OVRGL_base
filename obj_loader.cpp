@@ -275,7 +275,7 @@ bool loadOBJ(Model& data, const std::string& _filePath)
 
 	// material‚²‚Æ
 	for (auto& inm: material) {
-		DBGLOG("col: 0x%08x", GetColor((int)(inm.second.diffuse[0] * 255), (int)(inm.second.diffuse[1] * 255), (int)(inm.second.diffuse[2] * 255)) );
+		//DBGLOG("col: 0x%08x", GetColor((int)(inm.second.diffuse[0] * 255), (int)(inm.second.diffuse[1] * 255), (int)(inm.second.diffuse[2] * 255)) );
 		DWORD Col = GetColor((int)(inm.second.diffuse[0] * 255), (int)(inm.second.diffuse[1] * 255), (int)(inm.second.diffuse[2] * 255));
 		// face‚²‚Æ 
 		for (auto& fas : face[inm.first]) {
@@ -289,7 +289,7 @@ bool loadOBJ(Model& data, const std::string& _filePath)
 					vvv.U = texture[fas.ti[i]].x;
 					vvv.V = 1.0f-texture[fas.ti[i]].y;
 					data.AddVertex(vvv);
-					fas.vi[i] = data.Vertices.size()-1;
+					fas.vi[i] = (int) (data.Vertices.size()-1);
 				}
 				else {
 					data.Vertices[fas.vi[i]].C = Col;
