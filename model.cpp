@@ -171,9 +171,9 @@ void Model::Render(Matrix4f view, Matrix4f proj)
 	glUseProgram(Fill->program);
 	glUniform1i(glGetUniformLocation(Fill->program, "Texture0"), 0);
 	glUniformMatrix4fv(glGetUniformLocation(Fill->program, "matWVP"), 1, GL_TRUE, (FLOAT*)&combined);
-	glUniformMatrix4fv(glGetUniformLocation(Fill->program, " model_mat"), 1, GL_TRUE, (FLOAT*)&GetMatrix());
+	glUniformMatrix4fv(glGetUniformLocation(Fill->program, " model"), 1, GL_TRUE, (FLOAT*)&GetMatrix());
 
-	glUniform3f(glGetUniformLocation(Fill->program, "LightDirection"), 5.0f, 5.0f, 5.0f);
+	glUniform3f(glGetUniformLocation(Fill->program, "lightPos"), 5.0f, 5.0f, 5.0f);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, Fill->texture->texId);

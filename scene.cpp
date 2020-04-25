@@ -39,34 +39,45 @@ void Scene::Init(int includeIntensiveGPUobject)
 	static const GLchar* VertexShaderSrc =
 		"#version 150\n"
 		"uniform mat4 matWVP;\n"
-		"uniform mat4  model_mat;\n"
+		"uniform mat4  model;\n"
 		"in      vec4 Position;\n"
 		"in      vec4 Color;\n"
 		"in      vec2 TexCoord;\n"
 		"in      vec3 Normal;\n"
-		"uniform vec3 LightDirection;\n"
 		"out     vec2 oTexCoord;\n"
 		"out     vec4 oColor;\n"
+		"out     vec3 oNormal;\n"
+		"out	 vec3 FragPos;\n"
 		"void main()\n"
 		"{\n"
 		"   gl_Position = (matWVP * Position);\n"
 		"   oTexCoord   = TexCoord;\n"
-		"vec3 normal = normalize((vec4(Normal, 0.0) * model_mat).xyz);\n"
-		"float power = dot(Normal, -normalize(LightDirection));\n"
-		"power = clamp(power, 0.0, 1.0);\n"
-		"   oColor.rgb  = pow(Color.rgb*power+0.2, vec3(2.2));\n"   // convert from sRGB to linear
+		"	oNormal = Normal;\n"
+		"	FragPos = vec3(model * Position);\n"
+		"   oColor.rgb  = pow(Color.rgb, vec3(2.2));\n"   // convert from sRGB to linear
 		"   oColor.a    = Color.a;\n"
 		"}\n";
 
 	static const char* FragmentShaderSrc =
 		"#version 150\n"
 		"uniform sampler2D Texture0;\n"
+		"uniform vec3 lightPos;\n"
 		"in      vec4      oColor;\n"
 		"in      vec2      oTexCoord;\n"
+		"in      vec3	   oNormal;\n"
+		"in		 vec3	   FragPos;\n"
 		"out     vec4      FragColor;\n"
 		"void main()\n"
 		"{\n"
-		"   FragColor = oColor * texture2D(Texture0, oTexCoord);\n"
+		"   float ambientStrength = 0.4;\n"
+		"   vec3 lightColor = vec3(1.0, 1.0, 1.0);\n"
+		"   vec3 ambient = ambientStrength * lightColor;\n"
+		"	vec3 norm = normalize(oNormal);\n"
+		"	vec3 lightDir = normalize(lightPos - FragPos);\n"
+		"	float diff = max(dot(norm, lightDir), 0.0);\n"
+		"	vec3 diffuse = diff * lightColor;\n"
+		"	vec3 result = (ambient + diffuse) *oColor.rgb * texture2D(Texture0, oTexCoord).xyz;\n"
+		"	FragColor = vec4(result, oColor.a);\n"
 		"}\n";
 
 	GLuint    vshader = CreateShader(GL_VERTEX_SHADER, VertexShaderSrc);
